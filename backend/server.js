@@ -40,6 +40,6 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, () => {s
     console.log(`Server running on http://localhost:${PORT}`)
 });
