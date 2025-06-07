@@ -43,13 +43,26 @@ app.get('/room', (req, res) => {
 
 io.on('connection', (socket) => {
     const room = socket.handshake.query.room;
+
+    socket.on("disconnecting", () => {
+        const rooms = Array.from(socket.rooms);
+        if (rooms[1] !== 'public') {
+            if (socket.adapter.rooms.get(rooms[1])) {
+                if (socket.adapter.rooms.get(rooms[1]).size === 1) {
+                    existingIDs.splice(existingIDs.indexOf(rooms[1]), 1);
+                }
+            }
+        }
+    });
+
     if (existingIDs.includes(room)) {
         socket.join(room);
     } else {
         io.emit('error', "404", "Room Not Found");
     }
-    socket.on('chatMessage', (msg) => {
-        io.to(room).emit('inbox', msg);
+    
+    socket.on('chatMessage', (userName, msg) => {
+        io.to(room).emit('inbox', userName, msg);
     });
 });
 

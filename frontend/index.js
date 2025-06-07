@@ -5,6 +5,7 @@ const joinRoom = document.getElementById('joinRoom');
 const roomCode = document.getElementById('roomCode');
 const leaveRoom = document.getElementById('leaveRoom');
 let room = getParameterByName("id") || "public";
+const userName = "sam";
 
 const socket = io("/", {
     query: {
@@ -23,25 +24,31 @@ function getParameterByName(name, url = window.location.href) {
 
 chat.addEventListener('submit', (e) => {
     e.preventDefault();
-    if (chatMessage.value) {
-        socket.emit('chatMessage', chatMessage.value);
+    if (chatMessage.value === 'fuck') {
+        socket.emit('chatMessage', userName, chatMessage.value);
         chatMessage.value = '';
     }
 });
 
-socket.on('inbox', (msg) => {
+socket.on('inbox', (userName, msg) => {
     const elem = document.createElement('div');
+    const elem2 = document.createElement('div');
+    const inbox = document.getElementById('inbox');
     elem.id = 'text';
+    elem2.id = 'users';
+    elem2.textContent = userName+": ";
     elem.textContent = msg;
-    document.getElementById('inbox').appendChild(elem);
-    window.scrollTo(0, document.body.scrollHeight);
+    inbox.appendChild(elem2);
+    inbox.appendChild(elem);
+    inbox.appendChild(document.createElement('br'));
+    inbox.scrollTop = inbox.scrollHeight;
 });
 
 socket.on('error', (status_code, msg) => {
     document.getElementById('main').remove();
     const elem = document.createElement('div');
-    elem.id = status_code;
-    elem.textContent = msg;
+    elem.id = "error";
+    elem.textContent = status_code +" "+ msg;
     document.body.appendChild(elem);
 });
 
