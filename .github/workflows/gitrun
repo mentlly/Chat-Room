@@ -1,0 +1,30 @@
+name: Run backend/server.js on WeChat branch
+
+on:
+  push:
+    branches:
+      - WeChat
+  workflow_dispatch:
+
+jobs:
+  run-server:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout WeChat branch
+      uses: actions/checkout@v3
+      with:
+        ref: WeChat
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16' # specify your node version
+
+    - name: Install dependencies
+      working-directory: ./backend 
+      run: npm install
+
+    - name: Run server.js
+      working-directory: ./backend
+      run: node server.js
