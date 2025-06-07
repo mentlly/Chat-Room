@@ -7,7 +7,7 @@ const io = require('socket.io')(server);
 //app.use(helmet());
 
 const PORT = 3000;
-let existingIDs = [];
+let existingIDs = ['public'];
 
 async function createRoom() {
     const getRandomLetters = (length = 1) => Array(length).fill().map(e => String.fromCharCode(Math.floor(Math.random() * 26) + 65)).join('');
@@ -34,12 +34,20 @@ app.get('/api/createRoom', async (req, res) => {
 });
 
 app.get('/room', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+    if (req.query.id) {
+        res.sendFile(path.join(__dirname, '../frontend/room.html'));
+    } else {
+        res.redirect('/');
+    }
 });
 
 io.on('connection', (socket) => {
     const room = socket.handshake.query.room;
-    socket.join(room);
+    if (existingIDs.includes(room)) {
+        socket.join(room);
+    } else {
+        io.emit('error', "404", "Room Not Found");
+    }
     socket.on('chatMessage', (msg) => {
         io.to(room).emit('inbox', msg);
     });
