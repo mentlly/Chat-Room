@@ -16,12 +16,16 @@
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
-
         const chat = document.getElementById('chat');
         const chatMessage = document.getElementById('chatMessage');
         const createRoom = document.getElementById('createRoom');
         let room = getParameterByName("id") || "public";
+
+        const socket = io("/", {
+            query: {
+                room: room,
+            }
+        });
 
         function getParameterByName(name, url = window.location.href) {
             name = name.replace(/[\[\]]/g, '\\$&');
@@ -35,7 +39,7 @@
         chat.addEventListener('submit', (e) => {
             e.preventDefault();
             if (chatMessage.value) {
-                socket.emit('chatMessage', room, chatMessage.value);
+                socket.emit('chatMessage', chatMessage.value);
                 chatMessage.value = '';
             }
         });
@@ -56,7 +60,6 @@
                     }
                 })
                 .then(data => {
-                    console.log(data);
                     window.location.href = data.room;
                 })
         });
