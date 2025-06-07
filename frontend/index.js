@@ -1,0 +1,47 @@
+const chat = document.getElementById('chat');
+const chatMessage = document.getElementById('chatMessage');
+const createRoom = document.getElementById('createRoom');
+let room = getParameterByName("id") || "public";
+
+const socket = io("/", {
+    query: {
+        room: room,
+    }
+});
+
+function getParameterByName(name, url = window.location.href) {
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+chat.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (chatMessage.value) {
+        socket.emit('chatMessage', chatMessage.value);
+        chatMessage.value = '';
+    }
+});
+
+socket.on('inbox', (msg) => {
+    const elem = document.createElement('div');
+    elem.id = 'text';
+    elem.textContent = msg;
+    document.getElementById('inbox').appendChild(elem);
+    window.scrollTo(0, document.body.scrollHeight);
+});
+
+createRoom.addEventListener('click', async () => {
+    fetch("/api/createRoom")
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+        })
+        .then(data => {
+            window.location.href = data.room;
+        })
+});

@@ -1,7 +1,10 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const path = require('path');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+//const helmet = require('helmet');
+//app.use(helmet());
 
 const PORT = 3000;
 let existingIDs = [];
@@ -18,6 +21,8 @@ async function createRoom() {
     existingIDs.push(newID);
     return newID;
 }
+
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
