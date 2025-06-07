@@ -33,9 +33,9 @@ app.get('/room', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    socket.join('public');
-    socket.on('chatMessage', (room, msg) => {
-        socket.join(room);
+    const room = socket.handshake.query.room;
+    socket.join(room);
+    socket.on('chatMessage', (msg) => {
         io.to(room).emit('inbox', msg);
     });
 });
