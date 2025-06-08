@@ -217,3 +217,74 @@
     white-space: normal; /* Allow wrapping inside inbox */
     overflow-x: hidden;   /* Hide horizontal scroll */
 }
+
+.inputMsg {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Style the form container */
+#user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+/* Style the hidden input (when visible) */
+#userName {
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  min-width: 200px;
+}
+
+/* Focus effect for input */
+#userName:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Style the submit button */
+#userSubmit {
+  cursor: pointer;
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #007bff; /* blue */
+  border: none;
+  border-radius: 4px;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for submit button */
+#userSubmit:hover {
+  background-color: #0056b3;
+}
+
+/* Container holding both #codeRoom and #user form */
+.container {
+  display: flex;
+  align-items: center; /* vertically center them */
+  justify-content: flex-start; /* align left */
+  gap: 20px; /* space between items */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #333;
+  /* No padding or background on #codeRoom */
+}
+
+/* Style for #codeRoom text */
+#codeRoom {
+  position: relative;
+  margin-left: 0; /* reset margin-left */
+  /* No padding or background as requested */
+  /* Add subtle text styling if needed */
+  letter-spacing: 0.05em;
+  user-select: none; /* optional: prevent text selection */
+}

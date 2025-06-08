@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../staticFiles/styles.css">
 </head>
 <body>
+    <div id="main2" class="container">
+        <form id="user">
+            <input type="text" id="userName" autocomplete="off" hidden>
+            <input type="submit" id="userSubmit" value="Enter UserName">
+        </form>
+        <div id="codeRoom"></div>
+    </div>
     <div id="main">
         <div>
             <button id="createRoom">Create Room</button>
@@ -22,6 +29,6 @@
         </form>
     </div>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="index.js"></script>
+    <script src="../staticFiles/index.js"></script>
 </body>
 </html>

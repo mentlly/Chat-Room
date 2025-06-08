@@ -4,14 +4,21 @@ const createRoom = document.getElementById('createRoom');
 const joinRoom = document.getElementById('joinRoom');
 const roomCode = document.getElementById('roomCode');
 const leaveRoom = document.getElementById('leaveRoom');
+const user = document.getElementById('user');
+const userNameElement = document.getElementById('userName');
+const codeRoom = document.getElementById('codeRoom');
 let room = getParameterByName("id") || "public";
-const userName = "sam";
+let userName = "";
 
 const socket = io("/", {
     query: {
         room: room,
     }
 });
+
+if (codeRoom) {
+    codeRoom.textContent = "Room Code: "+room;
+}
 
 function getParameterByName(name, url = window.location.href) {
     name = name.replace(/[\[\]]/g, '\\$&');
@@ -22,9 +29,25 @@ function getParameterByName(name, url = window.location.href) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+chatMessage.addEventListener('keypress', () => {
+    if (chatMessage.value.trim()) {
+        if (chatMessage.className) {
+            chatMessage.classList.remove('inputMsg');
+        }
+    }
+});
+
+userNameElement.addEventListener('keypress', () => {
+    if (userNameElement.value.trim()) {
+        if (userNameElement.className) {
+            userNameElement.classList.remove('inputMsg');
+        }
+    }
+});
+
 chat.addEventListener('submit', (e) => {
     e.preventDefault();
-    if (chatMessage.value === 'fuck') {
+    if (chatMessage.value) {
         socket.emit('chatMessage', userName, chatMessage.value);
         chatMessage.value = '';
     }
@@ -45,11 +68,15 @@ socket.on('inbox', (userName, msg) => {
 });
 
 socket.on('error', (status_code, msg) => {
-    document.getElementById('main').remove();
-    const elem = document.createElement('div');
-    elem.id = "error";
-    elem.textContent = status_code +" "+ msg;
-    document.body.appendChild(elem);
+    if (status_code === '400') {
+        if (msg === 'inputMsg') {
+            alert("Input a Message");
+            chatMessage.classList.add('inputMsg');
+        } else if (msg === 'inputUserName') {
+            alert("Enter UserName");
+            userNameElement.classList.add('inputMsg');
+        }
+    }
 });
 
 if (createRoom) {
@@ -84,3 +111,16 @@ if (joinRoom) {
         }
     });
 }
+
+user.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (userNameElement.hidden) {
+            userNameElement.hidden = false;
+    } else {
+        if (userNameElement.value.trim()) {
+            userName = userNameElement.value.trim();
+            userNameElement.hidden = true;
+            document.getElementById('userSubmit').value = "Change UserName";
+        }
+    }
+});

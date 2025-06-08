@@ -3,8 +3,6 @@ const app = express();
 const path = require('path');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-//const helmet = require('helmet');
-//app.use(helmet());
 
 const PORT = 3000;
 let existingIDs = ['public'];
@@ -22,10 +20,10 @@ async function createRoom() {
     return newID;
 }
 
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use('/staticFiles', express.static(path.join(__dirname, '../frontend/staticFiles')));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+    res.sendFile(path.join(__dirname, '../frontend/htmlFiles/index.html'));
 });
 
 app.get('/api/createRoom', async (req, res) => {
@@ -34,10 +32,10 @@ app.get('/api/createRoom', async (req, res) => {
 });
 
 app.get('/room', (req, res) => {
-    if (req.query.id) {
-        res.sendFile(path.join(__dirname, '../frontend/room.html'));
+    if (existingIDs.includes(req.query.id)) {
+        res.sendFile(path.join(__dirname, '../frontend/htmlFiles/room.html'));
     } else {
-        res.redirect('/');
+        res.sendFile(path.join(__dirname, '../frontend/htmlFiles/404.html'));
     }
 });
 
@@ -46,7 +44,7 @@ io.on('connection', (socket) => {
 
     socket.on("disconnecting", () => {
         const rooms = Array.from(socket.rooms);
-        if (rooms[1] !== 'public') {
+        if (rooms[1] !== 'public' && existingIDs.includes(rooms[1])) {
             if (socket.adapter.rooms.get(rooms[1])) {
                 if (socket.adapter.rooms.get(rooms[1]).size === 1) {
                     existingIDs.splice(existingIDs.indexOf(rooms[1]), 1);
@@ -57,12 +55,19 @@ io.on('connection', (socket) => {
 
     if (existingIDs.includes(room)) {
         socket.join(room);
-    } else {
-        io.emit('error', "404", "Room Not Found");
     }
     
     socket.on('chatMessage', (userName, msg) => {
-        io.to(room).emit('inbox', userName, msg);
+        if (userName.trim()) {
+            if(msg.trim()) {
+                io.to(room).emit('inbox', userName, msg);
+            } else {
+                io.to(socket.id).emit('error', '400', 'inputMsg');
+                
+            }
+        } else {
+            io.to(socket.id).emit("error", '400', 'inputUserName');
+        }
     });
 });
 
